@@ -18,7 +18,6 @@ class Block:
         block_params['transactions'] = []
         for x in range(0, len(self.transactions)):
             block_params['transactions'].append(self.transactions[x].__dict__)
-
         return json.dumps(block_params, sort_keys=True, indent=2)
 
     def generate_hash(self):
@@ -26,5 +25,3 @@ class Block:
         serialized_block = self.serialize().encode('utf-8')
         sha.update(serialized_block)
         return sha.hexdigest()
-
-

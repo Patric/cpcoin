@@ -17,8 +17,7 @@ class Transaction:
     def is_valid(self):
         if self.amount < 0:
             return False
-       
         return True
 
     def __str__(self):
-     return "Sender: " + self.sender + "\nRecipient: " + self.recipient + "\nAmount: " + str(self.amount)
+        return "Sender: " + self.sender + "\nRecipient: " + self.recipient + "\nAmount: " + str(self.amount)

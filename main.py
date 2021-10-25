@@ -1,5 +1,4 @@
-from blockChain import Blockchain
-from transaction import Transaction
+from blockchain import Blockchain
 
 menu_hint_text = """
                                                                                         
@@ -42,7 +41,7 @@ while option is not 0:
     elif option == 3:
         address = str(input("Enter miner's address: "))
         blockchain.mine(address)
-        print("Transaction mined")
+        print("Successful mining!")
     elif option == 4:
         print('Is blockchain valid: ' + str(blockchain.validate_chain(blockchain.get_chain)))
     elif option == 5:
@@ -53,6 +52,7 @@ while option is not 0:
             print(block.serialize())
     elif option == 7:
         blockchain = Blockchain()
+        print("Created new blockchain")
     else:
         print("Invalid option number")
     
