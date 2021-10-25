@@ -1,9 +1,9 @@
 import hashlib
-from os import sep
 from block import Block
 from transaction import Transaction
 
 class Blockchain:
+
     @property
     def last_block(self):
         return self.__chain[-1]
@@ -19,7 +19,6 @@ class Blockchain:
     @property
     def get_current_transactions(self):
         return self.__current_transactions
-
 
     def __init__(self):
         self.__current_transactions = []
@@ -37,10 +36,7 @@ class Blockchain:
     def add_block(self, block):
         if self.validate_block(block, self.last_block):
             self.__chain.append(block)
-
-            # empty transaction list
             self.__current_transactions = []
-
             return True
 
         return False
@@ -74,31 +70,21 @@ class Blockchain:
         index = last_block.index + 1
         previous_hash = last_block.hash
         nonce = self.generate_proof_of_work(last_block)
-
         #miner's reward
-        self.add_transaction(
-            sender = "0",
-            recipient = reward_address,
-            amount = 1,
-        )
-
+        self.add_transaction(sender = "0", recipient = reward_address, amount = 1)
         block = Block(index, self.__current_transactions, nonce, previous_hash)
-
         if self.add_block(block):
             return block
 
         return None
-
 
     def validate_proof_of_work(self, last_nonce: int, last_hash: str, nonce: int):
         sha = hashlib.sha256(f'{last_nonce}{last_hash}{nonce}'.encode())
         return sha.hexdigest()[:self.__difficulty] == '0' * self.__difficulty
 
     def generate_proof_of_work(self, block):
-
         last_nonce = block.nonce
         last_hash = block.hash
-
         nonce = 0
         while not self.validate_proof_of_work(last_nonce, last_hash, nonce):
             nonce += 1
