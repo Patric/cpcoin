@@ -1,7 +1,7 @@
 import time
 import json
 
-from coin import Coin
+from Coin import Coin
 
 # TODO: add sign to Transaction
 class Transaction:

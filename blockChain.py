@@ -1,7 +1,7 @@
 import hashlib
 from typing import List
-from block import Block
-from transaction import Transaction
+from Block import Block
+from Transaction import Transaction
 
 class Blockchain:
 
@@ -49,9 +49,6 @@ class Blockchain:
         if current_block.previous_hash != previous_block.hash:
             return False
 
-        if current_block.hash != current_block.generate_hash():
-            return False
-
         if not self.validate_proof_of_work(previous_block.nonce, previous_block.hash, current_block.nonce):
             return False
 
@@ -63,7 +60,6 @@ class Blockchain:
         previous_hash = last_block.hash
         nonce = self.generate_proof_of_work(last_block)
         self.__current_transactions = transactions
-        print("aaaaaaaaaaaa")
         block = Block(index, self.__current_transactions, nonce, previous_hash)
         if self.add_block(block):
             return block

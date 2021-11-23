@@ -1,6 +1,5 @@
-from blockchain import Blockchain
-from chainmanager import ChainManager
-from user import User
+from ChainManager import ChainManager
+from User import User
 
 logo = """
                                                                                         
@@ -29,7 +28,6 @@ user_menu = """
 2. Make Payment
 3. Check Wallet
 4. Validate blockchain  
-5. Show blockchain (help function)
 """
 
 print(logo)
@@ -56,14 +54,15 @@ while option is not 0:
                 chain_manager = payment_result
         elif option == 3:
             coins = user.check_wallet()
+            coins_serialized = []
             print("Your coins: ")
-            print(coins)
+            for coin in coins:
+                coins_serialized.append(coin.serialize())
+            print(coins_serialized)
+
         elif option == 4:
             is_valid = user.validate_blockchain()
-            print("Validation result is: " + is_valid)
-            # print('Is blockchain valid: ' + str(blockchain.validate_chain(blockchain.get_chain)))
-        elif option == 5:
-            chain_manager.show_blockchain()
+            print("Validation result is: " + str(is_valid))
         else:
             print("Invalid option number")
     

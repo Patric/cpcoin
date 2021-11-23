@@ -2,7 +2,7 @@ import hashlib
 import json
 from time import time
 from typing import List
-from transaction import Transaction
+from Transaction import Transaction
 
 class Block:
     def __init__(self, index: int, transactions: List[Transaction], nonce: int, previous_hash: str):
@@ -17,8 +17,6 @@ class Block:
         block_params = {x: self.__dict__[x] for x in self.__dict__ if x not in ['hash']}
         block_params['transactions'] = []
         for x in range(0, len(self.transactions)):
-            print(len(self.transactions))
-            print(type(self.transactions[x].coin))
             block_params['transactions'].append(self.transactions[x].__dict__)
         for x in range(0, len(block_params['transactions'])):
             block_params['transactions'][x]['coin'] = self.transactions[x].coin.__dict__
