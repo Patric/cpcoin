@@ -1,22 +1,22 @@
 import time
 import json
 
+from coin import Coin
+
 # TODO: add sign to Transaction
 class Transaction:
-    def __init__(self, sender: str, recipient: str, amount: float):
+    def __init__(self, sender: str, recipient: str, coin: Coin):
         self.sender = sender
         self.recipient = recipient
-        self.amount = amount
-        self.timestamp = self.__generate_timestamp()
+        self.coin = coin
+        self.timestamp = self.generate_timestamp()
     
-    def generate_timestamp():
+    def generate_timestamp(self):
         return time.time()
 
     # TODO: add checking sender wallet for resources
     # TODO: check sign of transaction
     def is_valid(self):
-        if self.amount < 0:
-            return False
         return True
 
     def __str__(self):

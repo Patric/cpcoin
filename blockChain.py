@@ -1,4 +1,5 @@
 import hashlib
+from typing import List
 from block import Block
 from transaction import Transaction
 
@@ -20,8 +21,8 @@ class Blockchain:
     def get_current_transactions(self):
         return self.__current_transactions
 
-    def __init__(self):
-        self.__current_transactions = []
+    def __init__(self, initial_transactions: List[Transaction]):
+        self.__current_transactions = initial_transactions
         self.__chain = []
         self.__difficulty = 4
         self.create_genesis()
@@ -56,26 +57,16 @@ class Blockchain:
 
         return True
 
-    def add_transaction(self, sender, recipient, amount):
-        transaction = Transaction(sender, recipient, amount)
-
-        if transaction.is_valid():
-            self.__current_transactions.append(transaction)
-        else:
-            print('Transaction not valid')
-
-    # TODO: check if mining is possible when no transactions
-    def mine(self, reward_address):
+    def append_blockchain(self, transactions: List[Transaction]):
         last_block = self.last_block
         index = last_block.index + 1
         previous_hash = last_block.hash
         nonce = self.generate_proof_of_work(last_block)
-        #miner's reward
-        self.add_transaction(sender = "0", recipient = reward_address, amount = 1)
+        self.__current_transactions = transactions
+        print("aaaaaaaaaaaa")
         block = Block(index, self.__current_transactions, nonce, previous_hash)
         if self.add_block(block):
             return block
-
         return None
 
     def validate_proof_of_work(self, last_nonce: int, last_hash: str, nonce: int):

@@ -1,6 +1,8 @@
 from blockchain import Blockchain
+from chainmanager import ChainManager
+from user import User
 
-menu_hint_text = """
+logo = """
                                                                                         
       _____        _____               _____           _____     ____  _____   ______   
   ___|\    \   ___|\    \          ___|\    \     ____|\    \   |    ||\    \ |\     \  
@@ -15,45 +17,57 @@ menu_hint_text = """
    \( |____|/   \(                  \( |____|/      \(    )/      \(       \(       )/  
     '   )/       '                   '   )/          '    '        '        '       '   
         '                                '                                  
-
-0. Quit
-1. Change mining diffulty level 
-2. Add transaction 
-3. Mine transaction 
-4. Validate blockchain 
-5. Show transactions
-6. Show blockchain
-7. Restart
 """
-option = int(input(menu_hint_text))
-blockchain = Blockchain()
+
+main_menu = """
+0. Quit
+1. Login
+"""
+
+user_menu = """
+1. Logout
+2. Make Payment
+3. Check Wallet
+4. Validate blockchain  
+5. Show blockchain (help function)
+"""
+
+print(logo)
+option = int(input(main_menu))
+chain_manager = ChainManager()
+user = User("", chain_manager)
 while option is not 0:
-    if option == 1:
-        difficulty_level = int(input('Enter difficulty level: '))
-        blockchain.change_difficulty_level(difficulty_level)
-        print("Difficulty level set to " + str(difficulty_level))
-    elif option == 2:
-        sender = str(input("Enter sender name: "))
-        recipent = str(input("Enter recipent name: "))
-        amount = float(input("Enter amount: "))
-        blockchain.add_transaction(sender, recipent, amount)
-        print("Transaction added")
-    elif option == 3:
-        address = str(input("Enter miner's address: "))
-        blockchain.mine(address)
-        print("Successful mining!")
-    elif option == 4:
-        print('Is blockchain valid: ' + str(blockchain.validate_chain(blockchain.get_chain)))
-    elif option == 5:
-        for transaction in blockchain.get_current_transactions:
-            print(transaction)
-    elif option == 6:
-        for block in blockchain.get_chain:
-            print(block.serialize())
-    elif option == 7:
-        blockchain = Blockchain()
-        print("Created new blockchain")
+    if user.username == "":
+        if option == 1:
+            username = input('Enter username: ')
+            print("User " + username + "logged in")
+            user = User(username, chain_manager)
+        
     else:
-        print("Invalid option number")
+        if option == 1:
+            user = User("", chain_manager)
+        elif option == 2:
+            recipent = str(input("Enter recipent name: "))
+            coin_id = int(input("Enter coin id: "))
+            payment_result = user.pay(recipent, coin_id)
+            if payment_result == None:
+                print("Transaction error")
+            else:
+                chain_manager = payment_result
+        elif option == 3:
+            coins = user.check_wallet()
+            print("Your coins: ")
+            print(coins)
+        elif option == 4:
+            is_valid = user.validate_blockchain()
+            print("Validation result is: " + is_valid)
+            # print('Is blockchain valid: ' + str(blockchain.validate_chain(blockchain.get_chain)))
+        elif option == 5:
+            chain_manager.show_blockchain()
+        else:
+            print("Invalid option number")
     
-    option = int(input(menu_hint_text))
+    if (user.username == ""):
+        option = int(input(main_menu))
+    else:
+        option = int(input(user_menu))

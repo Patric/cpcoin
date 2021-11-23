@@ -17,7 +17,11 @@ class Block:
         block_params = {x: self.__dict__[x] for x in self.__dict__ if x not in ['hash']}
         block_params['transactions'] = []
         for x in range(0, len(self.transactions)):
+            print(len(self.transactions))
+            print(type(self.transactions[x].coin))
             block_params['transactions'].append(self.transactions[x].__dict__)
+        for x in range(0, len(block_params['transactions'])):
+            block_params['transactions'][x]['coin'] = self.transactions[x].coin.__dict__
         return json.dumps(block_params, sort_keys=True, indent=2)
 
     def generate_hash(self):
