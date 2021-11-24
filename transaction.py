@@ -1,5 +1,4 @@
 import time
-import json
 from coin import Coin
 
 class Transaction:

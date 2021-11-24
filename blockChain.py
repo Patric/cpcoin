@@ -39,7 +39,7 @@ class Blockchain:
             self.__chain.append(block)
             self.__current_transactions = []
             return True
-
+        
         return False
 
     def validate_block(self, current_block, previous_block):
@@ -63,6 +63,7 @@ class Blockchain:
         block = Block(index, self.__current_transactions, nonce, previous_hash)
         if self.add_block(block):
             return block
+        
         return None
 
     def validate_proof_of_work(self, last_nonce: int, last_hash: str, nonce: int):
