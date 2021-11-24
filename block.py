@@ -2,7 +2,7 @@ import hashlib
 import json
 from time import time
 from typing import List
-from Transaction import Transaction
+from transaction import Transaction
 
 class Block:
     def __init__(self, index: int, transactions: List[Transaction], nonce: int, previous_hash: str):

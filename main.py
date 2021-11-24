@@ -1,5 +1,5 @@
-from ChainManager import ChainManager
-from User import User
+from chainmanager import ChainManager
+from user import User
 
 logo = """
                                                                                         
@@ -37,8 +37,9 @@ user = User("", chain_manager)
 while option is not 0:
     if user.username == "":
         if option == 1:
+            print("Available users are: Ala, Bob, John")
             username = input('Enter username: ')
-            print("User " + username + "logged in")
+            print("User " + username + " logged in")
             user = User(username, chain_manager)
         
     else:

@@ -1,6 +1,6 @@
-from BlockChain import Blockchain
-from Coin import Coin
-from Transaction import Transaction
+from blockChain import Blockchain
+from coin import Coin
+from transaction import Transaction
 
 
 class ChainManager:
@@ -50,7 +50,7 @@ class ChainManager:
                         Coin(transaction.coin['coin_id'], transaction.coin['value']))
                 elif transaction.sender == username:
                     user_coins = [
-                        coin for coin in user_coins if coin.coin_id == transaction.coin['coin_id']]
+                        coin for coin in user_coins if coin.coin_id != transaction.coin['coin_id']]
         return user_coins
 
     def get_last_block_hash(self):

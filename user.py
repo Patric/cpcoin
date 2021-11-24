@@ -1,4 +1,4 @@
-from ChainManager import ChainManager
+from chainmanager import ChainManager
 
 
 class User:
