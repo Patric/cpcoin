@@ -3,6 +3,7 @@ from typing import List
 from block import Block
 from transaction import Transaction
 
+# TODO: update whole class if necessery
 class Blockchain:
 
     @property

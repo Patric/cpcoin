@@ -1,30 +1,27 @@
+from typing import List
+from Crypto.PublicKey import RSA
 from blockChain import Blockchain
 from coin import Coin
 from transaction import Transaction
-
+from user import User
 
 class ChainManager:
-    def __init__(self):
-        user1 = "Ala"
-        user2 = "Bob"
-        user3 = "John"
-        self.users = [user1, user2, user3]
-        coin1 = Coin(1, 1)
-        coin2 = Coin(2, 1)
-        coin3 = Coin(3, 1)
-        coin4 = Coin(4, 1)
-        coin5 = Coin(5, 1)
-        initial_transactions = [
-            self.create_initial_transaction(user1, coin1),
-            self.create_initial_transaction(user2, coin2),
-            self.create_initial_transaction(user3, coin3),
-            self.create_initial_transaction(user1, coin4),
-            self.create_initial_transaction(user2, coin5)]
+    def __init__(self, users: List[User]):
+        key = RSA.generate(256)
+        self.__private_key = key
+        self.public_key = key.publickey().export_key()
+        coins = [Coin(1, 1), Coin(2, 1), Coin(3, 1), Coin(4, 1), Coin(5, 1)]
+        user_idx = 0
+        initial_transactions = []
+        for coin in coins:
+            if (user_idx > len(users)):
+                user_idx = 0
+
+            initial_transactions.append(Transaction(self, users[user_idx].public_key, coin))
+
         self.__blockchain = Blockchain(initial_transactions)
 
-    def create_initial_transaction(self, recipient: str, coin: Coin):
-        return Transaction("", recipient, coin)
-
+    # TODO: repair below code
     def add_transaction(self, sender: str, recipient: str, coin_id: int):
         coin = self.get_coin(sender, coin_id)
         if coin == None:
