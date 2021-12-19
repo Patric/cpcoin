@@ -10,10 +10,10 @@ def calculate_hash(data) -> str:
     return h.hexdigest()
 
 
-def generate_transaction_data(sender, receiver, coin_id: int) -> dict:
+def generate_transaction_data(sender_pk: str, receiver_pk: str, coin_id: int) -> dict:
     return {
-        "sender": sender,
-        "receiver": receiver,
+        "sender": sender_pk,
+        "receiver": receiver_pk,
         "coin_id": coin_id
     }
     

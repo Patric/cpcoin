@@ -20,25 +20,33 @@ logo = """
 
 print(logo)
 
+# Create identity
 ala = User("Ala")
 bob = User("Bob")
 john = User("John")
 users = [ala, bob, john]
+
+# Create blockchain and initial transactions (inside)
 chain_manager = ChainManager(users)
+for coin in chain_manager.user_wallet_check(ala.public_key):
+  print(str(coin))
 
-# TODO: prepare examples
-# payment_result = user.pay(recipent, coin_id)
-# if payment_result == None:
-#     print("Transaction error")
-# else:
-#     chain_manager = payment_result
+# Create transactions
+chain_manager.pay(ala, bob, 1)
+chain_manager.pay(bob, john, 1)
+chain_manager.pay(john, ala, 1)
+for coin in chain_manager.user_wallet_check(ala.public_key):
+  print(str(coin))
 
-# coins = user.check_wallet()
-# coins_serialized = []
-# print("Your coins: ")
-# for coin in coins:
-#     coins_serialized.append(coin.serialize())
-# print(coins_serialized)
+#validate coins
+print("Coins valid: ", chain_manager.validate_coins())
 
-# is_valid = user.validate_blockchain()
-# print("Validation result is: " + str(is_valid))
+
+#validate transactions
+print("Transactions valid: ", chain_manager.validate_transactions())
+
+
+#validate blockchain
+print("Blockchain valid: ", chain_manager.validate_blockchain())
+
+# END

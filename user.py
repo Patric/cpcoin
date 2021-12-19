@@ -1,24 +1,27 @@
+from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
 from Crypto.PublicKey import RSA
-from chainmanager import ChainManager
+from transaction import Transaction
 
 class User:
-    def __init__(self, username: str, chain_manager: ChainManager):
+    def __init__(self, username: str):
         self.username = username
-        self.chain_manager = chain_manager
-        self.current_hash = self.chain_manager.get_last_block_hash()
-        key = RSA.generate(256)
-        self.__private_key = key
-        self.public_key = key.publickey().export_key()
+        self.__private_key = RSA.generate(1024)
+        self.public_key = self.__private_key.publickey().export_key()
+    
+    def sign(self, transaction: Transaction):
+        transaction_data = transaction.generate_data()
+        hash_object = SHA256.new(transaction_data)
+        signature = pkcs1_15.new(self.__private_key).sign(hash_object)
+        # self.signature = binascii.hexlify(signature).decode("utf-8")
+        transaction.set_signature(signature)
+        return transaction
 
-    def pay(self, recipient: str, coin_id: int):
-        result_block = self.chain_manager.add_transaction(self.username, recipient, coin_id)
-        if result_block != None:
-            self.current_hash = result_block.hash
-            return self.chain_manager
-        return result_block
+    def get_public_key(self):
+        return str(self.public_key)
 
-    def check_wallet(self):
-        return self.chain_manager.user_wallet_check(self.username)
+    def set_current_hash(self, hash: str):
+        self.current_hash = hash
 
-    def validate_blockchain(self):
-        return self.chain_manager.get_last_block_hash() == self.current_hash
+    def validate_blockchain_last_hash(self, last_hash):
+        return self.current_hash == last_hash

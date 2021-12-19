@@ -29,7 +29,7 @@ class Blockchain:
         self.create_genesis()
 
     def create_genesis(self):
-        genesis_block = Block(0, self.__current_transactions, 0, '00')
+        genesis_block = Block(0, self.__current_transactions, 0)
         self.__chain.append(genesis_block)
     
     def change_difficulty_level(self, level):
@@ -58,10 +58,9 @@ class Blockchain:
     def append_blockchain(self, transactions: List[Transaction]):
         last_block = self.last_block
         index = last_block.index + 1
-        previous_hash = last_block.hash
         nonce = self.generate_proof_of_work(last_block)
         self.__current_transactions = transactions
-        block = Block(index, self.__current_transactions, nonce, previous_hash)
+        block = Block(index, self.__current_transactions, nonce, last_block)
         if self.add_block(block):
             return block
         
@@ -81,7 +80,7 @@ class Blockchain:
         return nonce
 
     def validate_chain(self, chain_to_validate):
-        if chain_to_validate[0].generate_hash() != self.__chain[0].generate_hash():
+        if chain_to_validate[0].hash != self.__chain[0].hash:
             return False
 
         for x in range(1, len(chain_to_validate)):
@@ -89,4 +88,3 @@ class Blockchain:
                 return False
 
         return True
-
