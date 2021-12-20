@@ -1,6 +1,3 @@
-import binascii
-from Crypto.Hash import SHA256
-from Crypto.Signature import pkcs1_15
 from coin import Coin
 from utils import generate_transaction_data, transaction_to_bytes
 

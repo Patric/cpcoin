@@ -1,4 +1,3 @@
-import binascii
 from typing import List
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -7,7 +6,6 @@ from blockChain import Blockchain
 from coin import Coin
 from transaction import Transaction
 from user import User
-from utils import generate_transaction_data
 
 class ChainManager:
     def __init__(self, users: List[User]):
@@ -45,7 +43,6 @@ class ChainManager:
 
     def get_coin(self, sender_pk: str, coin_id: int):
         user_coins = self.user_wallet_check(sender_pk)
-        print("ala coinsL", user_coins)
         transaction_coin = None
         for i in range(0, len(user_coins)):
             if coin_id == user_coins[i].coin_id:
