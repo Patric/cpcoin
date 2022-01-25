@@ -59,8 +59,6 @@ def getUserByName(list: List[User], name):
     if elem.username == name:
       return elem
 
-
-
 def makeTurn(user: User):
   global threads
   try:
@@ -79,6 +77,10 @@ def makeTurn(user: User):
           externalUser.set_blockchain(old_blockchain)
         
     print_users_coins(users)
+    # clear pending transactions for users
+    for user in users:
+      user.pending_transactions = []
+
   except Exception as e:
     pass
  
