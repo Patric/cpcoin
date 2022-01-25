@@ -25,12 +25,14 @@ logo = """
 
 print(logo)
 
-def print_users_coins(users: List[User], optional_text=""):
-  print(optional_text)
+def print_users_coins(users: List[User]):
   for user in users:
-    print(user.username + "'s coins: ")
+    print('')
+    print(user.username + "'s coins: ", end="")
     for coin in user.user_wallet_check(user.get_public_key()):
-       print(str(coin) + " ")
+       print(str(coin), end=" ")
+  print('')
+
 
 
 # Create identity
@@ -40,33 +42,17 @@ john = User("John")
 users = [ala, bob, john]
 
 users = simulationUtils.initiate_users_with_blockchain(users)
-
-print_users_coins(users)
-
 # Create transactions
-print("Ala pays 1 to Bob")
+print("Ala creates transaction of coin id 1 to Bob")
 ala.broadcast_new_transaction(bob, 1, users)
 
-print("Bob pays 2 to John")
+print("Bob creates transaction of coin id 2 to John")
 bob.broadcast_new_transaction(john, 2, users)
 
-print("John pays 3 to Ala")
+print("John creates transaction of coin id 3 to Ala")
 john.broadcast_new_transaction(ala, 3, users)
 
 print_users_coins(users)
-
-
-# #validate coins
-# print("Coins valid: ", chain_manager.validate_coins())
-
-# #validate transactions
-# print("Transactions valid: ", chain_manager.validate_transactions())
-
-# #validate blockchain
-# print("Blockchain valid: ", chain_manager.validate_blockchain())
-
-# # END
-#!/usr/bin/python
 
 def getUserByName(list: List[User], name):
   for elem in list:
@@ -79,13 +65,10 @@ def makeTurn(user: User):
   global threads
   try:
     user.mine()
-    print(f'{user.username} received an award \n')
+    print(f'{user.username} received an award and added a block with transactions')
     for thread in threads:
       if thread.name != user.username:
         thread.raise_exception()
-        # 
-
-
         # if broadcasting to the winner failed transactions that failed are not persisted in blockchain of the others (if blockchain is valid)
         externalUser = getUserByName(users, thread.name)
         old_blockchain = externalUser.get_blockchain()

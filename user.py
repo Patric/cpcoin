@@ -24,7 +24,6 @@ class User:
         transaction_data = transaction.generate_data()
         hash_object = SHA256.new(transaction_data)
         signature = pkcs1_15.new(self.__private_key).sign(hash_object)
-        # self.signature = binascii.hexlify(signature).decode("utf-8")
         transaction.set_signature(signature)
         return transaction
 
@@ -36,23 +35,6 @@ class User:
 
     def validate_blockchain_last_hash(self, last_hash):
         return self.current_hash == last_hash
-
-    
-    # def get_chainmanager_signed_transaction(self, transaction: Transaction):
-    #     transaction_data = transaction.generate_data()
-    #     hash_object = SHA256.new(transaction_data)
-    #     signature = pkcs1_15.new(self.__private_key).sign(hash_object)
-    #     transaction.set_signature(signature)
-    #     return transaction
-
-    # def add_transaction(self, sender, recipient, coin_id: int):
-    #     coin = self.get_coin(sender.get_public_key(), coin_id)
-    #     if coin == None:
-    #         return False
-    #     transaction = Transaction(sender.public_key, recipient.public_key, coin)
-    #     transaction = sender.sign(transaction)
-    #     result_block = self.__blockchain.append_blockchain([transaction])
-    #     return result_block
 
     def create_transaction(self, sender, recipient, coin_id: int):
         coin = self.get_coin(sender.get_public_key(), coin_id)
@@ -85,27 +67,15 @@ class User:
             if broadcasting_successful and receiver.public_key != self.public_key:
                 receiver.pending_transactions.append(new_transaction)
 
-    # def pay(self, recipient, coin_id: int):
-    #     sender = self
-    #     self.broadcast_new_transaction(sender, recipient, coin_id)
+    def __receive_award(self):
+        award_transaction = Transaction(self.public_key, self.public_key, Coin(6,1))
+        award_transaction = self.sign(award_transaction)
+        self.pending_transactions.append(award_transaction)
 
     def mine(self):
-        print(self.username + "'s mines \n")
-        # award_transaction = Transaction(self.public_key, self.public_key, Coin(6,1))
-        # award_transaction = self.sign(award_transaction)
-        # self.pending_transactions.append(award_transaction)
+        print(self.username + " mines")
+        self.__receive_award()
         self.__blockchain.append_blockchain(self.pending_transactions)
-        print(self.username + "mining finished")
-        # result_block = self.add_transaction(sender, recipient, coin_id)
-        # if result_block == False:
-        #     print("user " + sender.username + " does not own coin id " + str(coin_id))
-        #     return None
-        # if result_block != None:
-        #     sender.set_current_hash(result_block.hash)
-        #     recipient.set_current_hash(result_block.hash)
-        #     return self
-        # return result_block
-
   
     def get_last_block_hash(self):
         return self.__blockchain.last_block.hash
