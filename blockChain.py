@@ -1,4 +1,6 @@
 import hashlib
+import random
+import time
 from typing import List
 from block import Block
 from transaction import Transaction
@@ -18,18 +20,24 @@ class Blockchain:
     def get_chain(self):
         return self.__chain
 
-    @property
-    def get_current_transactions(self):
-        return self.__current_transactions
-
     def __init__(self, initial_transactions: List[Transaction]):
-        self.__current_transactions = initial_transactions
         self.__chain = []
-        self.__difficulty = 4
-        self.create_genesis()
+        self.__difficulty = 55
+        self.create_genesis(initial_transactions)
+    
+    def user_wallet_check(self, user_pk: str):
+        user_coins = []
+        for block in self.__chain:
+            for transaction in block.transactions:
+                if transaction.get_recipient_pk() == user_pk:
+                    user_coins.append(transaction.coin)
+                elif transaction.get_sender_pk() == user_pk:
+                    user_coins = [
+                        coin for coin in user_coins if coin.coin_id != transaction.coin.coin_id]
+        return user_coins
 
-    def create_genesis(self):
-        genesis_block = Block(0, self.__current_transactions, 0)
+    def create_genesis(self, initial_transactions):
+        genesis_block = Block(0, initial_transactions, 0)
         self.__chain.append(genesis_block)
     
     def change_difficulty_level(self, level):
@@ -38,7 +46,6 @@ class Blockchain:
     def add_block(self, block):
         if self.validate_block(block, self.last_block):
             self.__chain.append(block)
-            self.__current_transactions = []
             return True
         
         return False
@@ -50,7 +57,7 @@ class Blockchain:
         if current_block.previous_hash != previous_block.hash:
             return False
 
-        if not self.validate_proof_of_work(previous_block.nonce, previous_block.hash, current_block.nonce):
+        if not self.validate_proof_of_work(current_block.transactions, current_block.nonce):
             return False
 
         return True
@@ -58,23 +65,22 @@ class Blockchain:
     def append_blockchain(self, transactions: List[Transaction]):
         last_block = self.last_block
         index = last_block.index + 1
-        nonce = self.generate_proof_of_work(last_block)
-        self.__current_transactions = transactions
-        block = Block(index, self.__current_transactions, nonce, last_block)
+        nonce = self.generate_proof_of_work(transactions)
+        block = Block(index, transactions, nonce, last_block)
         if self.add_block(block):
             return block
         
         return None
 
-    def validate_proof_of_work(self, last_nonce: int, last_hash: str, nonce: int):
-        sha = hashlib.sha256(f'{last_nonce}{last_hash}{nonce}'.encode())
-        return sha.hexdigest()[:self.__difficulty] == '0' * self.__difficulty
+    def validate_proof_of_work(self, transactions: List[Transaction], nonce: int):
+        target = pow(2, 256 - self.__difficulty)
+        sha = hashlib.sha256(f'{transactions}{nonce}'.encode())
+        return int(sha.hexdigest()[:self.__difficulty], base=16) < target
 
-    def generate_proof_of_work(self, block):
-        last_nonce = block.nonce
-        last_hash = block.hash
-        nonce = 0
-        while not self.validate_proof_of_work(last_nonce, last_hash, nonce):
+    def generate_proof_of_work(self, transactions: List[Transaction]):
+        computing_power_random_variable = random.uniform(0, 10000)
+        nonce = computing_power_random_variable
+        while not self.validate_proof_of_work(transactions, nonce):
             nonce += 1
 
         return nonce

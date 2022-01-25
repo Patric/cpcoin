@@ -1,5 +1,10 @@
-from chainmanager import ChainManager
+import threading
+from typing import List
 from user import User
+import simulationUtils
+import time
+from ThreadWithException import ThreadWithException
+
 
 logo = """
                                                                                         
@@ -20,18 +25,13 @@ logo = """
 
 print(logo)
 
-def print_users_coins(chain_manager, ala, bob, john):
-  coins_summary = "Ala's coins: "
-  for coin in chain_manager.user_wallet_check(ala.get_public_key()):
-    coins_summary += str(coin) + " "
-  coins_summary += "\nBob's coins: "
-  for coin in chain_manager.user_wallet_check(bob.get_public_key()):
-    coins_summary += str(coin) + " "
-  coins_summary += "\nJohn's coins: "
-  for coin in chain_manager.user_wallet_check(john.get_public_key()):
-    coins_summary += str(coin) + " "
-  coins_summary += "\n------------------- \n"
-  print(coins_summary)
+def print_users_coins(users: List[User], optional_text=""):
+  print(optional_text)
+  for user in users:
+    print(user.username + "'s coins: ")
+    for coin in user.user_wallet_check(user.get_public_key()):
+       print(str(coin) + " ")
+
 
 # Create identity
 ala = User("Ala")
@@ -39,30 +39,76 @@ bob = User("Bob")
 john = User("John")
 users = [ala, bob, john]
 
-# Create blockchain and initial transactions (inside)
-chain_manager = ChainManager(users)
-print_users_coins(chain_manager, ala, bob, john)
+users = simulationUtils.initiate_users_with_blockchain(users)
+
+print_users_coins(users)
 
 # Create transactions
 print("Ala pays 1 to Bob")
-chain_manager.pay(ala, bob, 1)
-print_users_coins(chain_manager, ala, bob, john)
+ala.broadcast_new_transaction(bob, 1, users)
 
 print("Bob pays 2 to John")
-chain_manager.pay(bob, john, 2)
-print_users_coins(chain_manager, ala, bob, john)
+bob.broadcast_new_transaction(john, 2, users)
 
-print("John pays 2 to Ala")
-chain_manager.pay(john, ala, 2)
-print_users_coins(chain_manager, ala, bob, john)
+print("John pays 3 to Ala")
+john.broadcast_new_transaction(ala, 3, users)
 
-#validate coins
-print("Coins valid: ", chain_manager.validate_coins())
+print_users_coins(users)
 
-#validate transactions
-print("Transactions valid: ", chain_manager.validate_transactions())
 
-#validate blockchain
-print("Blockchain valid: ", chain_manager.validate_blockchain())
+# #validate coins
+# print("Coins valid: ", chain_manager.validate_coins())
 
-# END
+# #validate transactions
+# print("Transactions valid: ", chain_manager.validate_transactions())
+
+# #validate blockchain
+# print("Blockchain valid: ", chain_manager.validate_blockchain())
+
+# # END
+#!/usr/bin/python
+
+def getUserByName(list: List[User], name):
+  for elem in list:
+    if elem.username == name:
+      return elem
+
+
+
+def makeTurn(user: User):
+  global threads
+  try:
+    user.mine()
+    print(f'{user.username} received an award \n')
+    for thread in threads:
+      if thread.name != user.username:
+        thread.raise_exception()
+        # 
+
+
+        # if broadcasting to the winner failed transactions that failed are not persisted in blockchain of the others (if blockchain is valid)
+        externalUser = getUserByName(users, thread.name)
+        old_blockchain = externalUser.get_blockchain()
+        updated_blockchain = user.get_blockchain()
+        externalUser.set_blockchain(updated_blockchain)
+        is_new_blockchain_correct = externalUser.validate_all()
+        if not is_new_blockchain_correct:
+          externalUser.set_blockchain(old_blockchain)
+        
+    print_users_coins(users)
+  except Exception as e:
+    pass
+ 
+bobsMining = ThreadWithException(bob.username, makeTurn, [bob])
+alasMining = ThreadWithException(ala.username, makeTurn, [ala])
+johnsMining = ThreadWithException(john.username, makeTurn, [john])
+
+threads = [bobsMining, alasMining, johnsMining]
+
+bobsMining.start()
+alasMining.start()
+johnsMining.start()
+
+
+
+
